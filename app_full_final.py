@@ -222,7 +222,7 @@ if st.sidebar.button("Load roster from Google Sheet"):
             st.session_state.df = df_try
             st.session_state.date_cols = date_cols
             dm = {}
-            for c in date_cols:
+            for c in sorted(date_cols, key=lambda c: parse_special_date_header(c) or date.max):
                 label = label_for(c)
                 key = label
                 k = 1
@@ -241,7 +241,20 @@ if st.session_state.df is None:
 df = st.session_state.df
 date_cols = st.session_state.date_cols
 display_map = st.session_state.display_map
-sorted_date_cols = date_cols
+sorted_date_cols = sorted(date_cols, key=lambda c: parse_special_date_header(c) or date.max)
+# Ensure display_map follows chronological order
+if display_map:
+    dm = {}
+    for c in sorted_date_cols:
+        label = label_for(c)
+        key = label
+        k = 1
+        while key in dm:
+            key = f"{label} ({k})"; k += 1
+        dm[key] = c
+    display_map = dm
+    st.session_state.display_map = dm
+    st.session_state.sorted_date_cols = sorted_date_cols
 
 # ---------------- Build users ----------------
 name_col = COL_NAME if COL_NAME in df.columns else next((c for c in df.columns if str(c).strip().lower().startswith("name")), df.columns[0])
