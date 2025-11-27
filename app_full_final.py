@@ -169,7 +169,7 @@ def validate_swap(df, ra, ia, rb, ib, date_cols, inexperienced_set):
     try:
         ca = parse_special_date_header(date_cols[ia])
         cb = parse_special_date_header(date_cols[ib])
-        today = date.today()
+        today = date(2026, 1, 1)
         def month_diff(d):
             return (d.year - today.year)*12 + (d.month - today.month)
         if ca is None or cb is None or month_diff(ca) < 0 or month_diff(ca) > ALLOWED_MONTH_RANGE or month_diff(cb) < 0 or month_diff(cb) > ALLOWED_MONTH_RANGE:
